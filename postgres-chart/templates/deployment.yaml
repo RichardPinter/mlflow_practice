@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.postgres.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: postgres
+        image: {{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.postgres.secretName }}
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.postgres.secretName }}
+              key: postgres-password
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.postgres.secretName }}
+              key: postgres-user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.postgres.secretName }}
+              key: postgres-password
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.postgres.secretName }}
+              key: postgres-db
+        ports:
+        - containerPort: {{ .Values.postgres.service.port }}
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: {{ .Values.postgres.persistence.mountPath }}
+      volumes:
+      - name: postgres-storage
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  ports:
+  - port: {{ .Values.postgres.service.port }}
+    targetPort: {{ .Values.postgres.service.port }}
+  selector:
+    app: {{ .Release.Name }}

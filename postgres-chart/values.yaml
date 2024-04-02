@@ -1,0 +1,22 @@
+# ... (existing values)
+namespace: mlflow
+
+appName: postgres
+
+deploymentName: postgres
+
+replicaCount: 1
+postgres:
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: local
+  secretName: postgres-secret
+  persistence:
+    mountPath: /var/lib/postgresql/data
+  service:
+    port: 5432
+  auth:
+    passwordEncoded: cGFzc3dvcmQ=
+    userEncoded: dXNlcg==
+    databaseEncoded: bWxmbG93X2Ri

@@ -1,0 +1,10 @@
+k delete deployment postgres
+k delete service postgres
+k delete deployment mlflow
+k delete service mlflow
+
+eval $(minikube docker-env)
+docker build -t local:mlflow_v1 -f mlflow/Dockerfile .
+k apply -f mlflow/mlflow-deployment.yaml 
+k apply -f postgres/postgres-deployment.yaml 
+kubectl port-forward svc/mlflow 5000:5000

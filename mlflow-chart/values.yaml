@@ -1,0 +1,22 @@
+# values.yaml
+namespace: mlflow
+
+appName: mlflow
+
+deploymentName: mlflow
+
+replicaCount: 1
+
+image:
+  repository: local/mlflow
+  tag: v1
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+postgresql:
+  host: postgres
+  port: 5432
+  secretName: postgres-secret
